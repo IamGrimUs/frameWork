@@ -1,0 +1,20 @@
+{
+  "devDependencies": {
+    "typescript": "^5.4.2"
+  },
+  "name": "web",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start:parcel": "npx parcel index.html",
+    "start:db": "npx json-server --watch db.json"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "axios": "^1.6.7",
+    "json-server": "^0.17.4"
+  }
+}
