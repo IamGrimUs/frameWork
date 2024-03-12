@@ -117,7 +117,47 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   }
 
   return newRequire;
-})({"node_modules/axios/lib/helpers/bind.js":[function(require,module,exports) {
+})({"src/models/Eventing.ts":[function(require,module,exports) {
+"use strict";
+
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : String(i); }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Eventing = void 0;
+var Eventing = /*#__PURE__*/function () {
+  function Eventing() {
+    _classCallCheck(this, Eventing);
+    this.events = {};
+  }
+  _createClass(Eventing, [{
+    key: "on",
+    value: function on(eventName, callback) {
+      var handlers = this.events[eventName] || [];
+      handlers.push(callback);
+      this.events[eventName] = handlers;
+    }
+  }, {
+    key: "trigger",
+    value: function trigger(eventName) {
+      var handlers = this.events[eventName];
+      if (!handlers || handlers.length === 0) {
+        return;
+      }
+      handlers.forEach(function (callback) {
+        callback();
+      });
+    }
+  }]);
+  return Eventing;
+}();
+exports.Eventing = Eventing;
+},{}],"node_modules/axios/lib/helpers/bind.js":[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -5432,7 +5472,7 @@ exports.isCancel = isCancel;
 exports.CanceledError = CanceledError;
 exports.AxiosError = AxiosError;
 exports.Axios = Axios;
-},{"./lib/axios.js":"node_modules/axios/lib/axios.js"}],"src/models/User.ts":[function(require,module,exports) {
+},{"./lib/axios.js":"node_modules/axios/lib/axios.js"}],"src/models/Sync.ts":[function(require,module,exports) {
 "use strict";
 
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
@@ -5449,13 +5489,54 @@ var __importDefault = this && this.__importDefault || function (mod) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.User = void 0;
+exports.Sync = void 0;
 var axios_1 = __importDefault(require("axios"));
+var Sync = /*#__PURE__*/function () {
+  function Sync(baseUrl) {
+    _classCallCheck(this, Sync);
+    this.baseUrl = baseUrl;
+  }
+  _createClass(Sync, [{
+    key: "fetch",
+    value: function fetch(id) {
+      return axios_1.default.get("".concat(this.baseUrl, "/").concat(id));
+    }
+  }, {
+    key: "save",
+    value: function save(data) {
+      var id = data.id;
+      if (id) {
+        return axios_1.default.put("".concat(this.baseUrl, "/").concat(id), data);
+      } else {
+        return axios_1.default.post(this.baseUrl, data);
+      }
+    }
+  }]);
+  return Sync;
+}();
+exports.Sync = Sync;
+},{"axios":"node_modules/axios/index.js"}],"src/models/User.ts":[function(require,module,exports) {
+"use strict";
+
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : String(i); }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.User = void 0;
+var Eventing_1 = require("./Eventing");
+var Sync_1 = require("./Sync");
+var baseUrl = 'http://localhost:3000/users';
 var User = /*#__PURE__*/function () {
   function User(data) {
     _classCallCheck(this, User);
     this.data = data;
-    this.events = {};
+    this.events = new Eventing_1.Eventing();
+    this.sync = new Sync_1.Sync(baseUrl);
   }
   _createClass(User, [{
     key: "get",
@@ -5467,47 +5548,11 @@ var User = /*#__PURE__*/function () {
     value: function set(update) {
       Object.assign(this.data, update);
     }
-  }, {
-    key: "on",
-    value: function on(eventName, callback) {
-      var handlers = this.events[eventName] || [];
-      handlers.push(callback);
-      this.events[eventName] = handlers;
-    }
-  }, {
-    key: "trigger",
-    value: function trigger(eventName) {
-      var handlers = this.events[eventName];
-      if (!handlers || handlers.length === 0) {
-        return;
-      }
-      handlers.forEach(function (callback) {
-        callback();
-      });
-    }
-  }, {
-    key: "fetch",
-    value: function fetch() {
-      var _this = this;
-      axios_1.default.get("http://localhost:3000/users/".concat(this.get('id'))).then(function (response) {
-        _this.set(response.data);
-      });
-    }
-  }, {
-    key: "save",
-    value: function save() {
-      var id = this.get('id');
-      if (id) {
-        axios_1.default.put("http://localhost:3000/users/".concat(id), this.data);
-      } else {
-        axios_1.default.post('http://localhost:3000/users', this.data);
-      }
-    }
   }]);
   return User;
 }();
 exports.User = User;
-},{"axios":"node_modules/axios/index.js"}],"src/index.ts":[function(require,module,exports) {
+},{"./Eventing":"src/models/Eventing.ts","./Sync":"src/models/Sync.ts"}],"src/index.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5519,6 +5564,10 @@ var user = new User_1.User({
   age: 1
 });
 user.save();
+user.events.on('change', function () {
+  console.log('change!!!!');
+});
+user.events.trigger('change');
 },{"./models/User":"src/models/User.ts"}],"../../../../../../opt/homebrew/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
