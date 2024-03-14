@@ -1,7 +1,8 @@
+import { Model } from './Model'
+import { Attributes } from './Attributes'
+import { ApiSync } from './APISync'
 import { Eventing } from './Eventing'
-import { Sync } from './Sync'
-
-type stingNumberUndefined = string | number | undefined
+import { Collection } from './Collection'
 export interface UserProps {
   id?: number
   name?: string
@@ -9,15 +10,12 @@ export interface UserProps {
 }
 
 const baseUrl = 'http://localhost:3000/users'
-export class User {
-  public events: Eventing = new Eventing()
-  public sync: Sync<UserProps> = new Sync<UserProps>(baseUrl)
-  constructor(private data: UserProps) {}
 
-  get<K extends keyof UserProps>(propName: K): stingNumberUndefined {
-    return this.data[propName]
+export class User extends Model<UserProps> {
+  static buildUser(attrs: UserProps): User {
+    return new User(new Attributes<UserProps>(attrs), new Eventing(), new ApiSync<UserProps>(baseUrl))
   }
-  set(update: UserProps): void {
-    Object.assign(this.data, update)
+  static buildUserCollection(): Collection<User, UserProps> {
+    return new Collection<User, UserProps>(baseUrl, (json: UserProps) => User.buildUser(json))
   }
 }
